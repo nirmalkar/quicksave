@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "quickSave",
+    "version": "1.0",
+    "description": "Save current URL with a custom note directly from the omnibox.",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "notifications"
+    ],
+    "omnibox": { "keyword": "bn" },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+  
