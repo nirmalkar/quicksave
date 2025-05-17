@@ -145,3 +145,13 @@ function saveEdit(timestamp, newNote) {
 
 // Initial render when popup opens
 document.addEventListener('DOMContentLoaded', renderList);
+
+const viewAllBtn = document.getElementById('viewAllBtn');
+console.log(viewAllBtn, 'hello!')
+
+viewAllBtn.addEventListener('click', () => {
+  // Opens list.html in a new tab
+  chrome.tabs.create({
+    url: chrome.runtime.getURL('list.html')
+  });
+});

@@ -1,3 +1,5 @@
+// background.js - service worker for Quick Bookmark & Note
+
 /**
  * Saves a bookmark entry (URL, title, note, timestamp) to chrome.storage.local,
  * then invokes an optional callback once storage is complete.
@@ -19,7 +21,6 @@ function saveEntry(note, callback) {
     chrome.storage.local.get({ bookmarks: [] }, (res) => {
       const bookmarks = res.bookmarks;
       bookmarks.push(entry);
-      // Save and then call the callback
       chrome.storage.local.set({ bookmarks }, () => {
         console.log(`Saved: ${tab.title}`);
         if (typeof callback === 'function') callback();
@@ -28,13 +29,27 @@ function saveEntry(note, callback) {
   });
 }
 
-// Omnibox handler (“bn <your note>”)
+// Handler for omnibox input: “bn <note>”
 chrome.omnibox.onInputEntered.addListener((noteText) => {
   const note = noteText.trim();
   if (note) saveEntry(note);
 });
 
-// Popup → background message handler (now asynchronous)
+/**
+ * Opens all saved bookmark URLs in new tabs.
+ * @param {Function} [callback] - Called after all tabs are created.
+ */
+function openAllEntries(callback) {
+  chrome.storage.local.get({ bookmarks: [] }, (res) => {
+    const bookmarks = res.bookmarks;
+    bookmarks.forEach(bm => {
+      chrome.tabs.create({ url: bm.url });
+    });
+    if (typeof callback === 'function') callback();
+  });
+}
+
+// Popup → background message handler
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === 'save' && typeof msg.note === 'string') {
     const note = msg.note.trim();
@@ -42,11 +57,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendResponse({ success: false, error: 'Empty note' });
       return false;
     }
-    // Save and only respond after storage completes
-    saveEntry(note, () => {
-      sendResponse({ success: true });
-    });
-    return true;  // Keep message channel open for async response
+    saveEntry(note, () => sendResponse({ success: true }));
+    return true;  // Keep channel open for async
   }
+
+  if (msg.action === 'openAll') {
+    openAllEntries(() => sendResponse({ success: true }));
+    return true;  // Async response
+  }
+
   return false;
 });

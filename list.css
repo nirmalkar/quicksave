@@ -1,0 +1,22 @@
+/* list.css */
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+.card {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+.card a {
+  font-weight: bold;
+  color: #0366d6;
+  text-decoration: none;
+}
+.card p {
+  margin: 6px 0;
+}
+.card small {
+  color: #555;
+}

@@ -3,12 +3,16 @@
   "name": "quickSave",
   "version": "1.1",
   "description": "Save current URL with a custom note via omnibox or popup.",
-  "permissions": ["storage", "activeTab", "notifications"],
+  "permissions": ["storage", "activeTab", "notifications", "tabs"],
   "omnibox": { "keyword": "bn" },
   "background": {
     "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html"
-  }
+  },
+  "web_accessible_resources": [{
+    "resources": ["list.html", "list.js", "list.css"],
+    "matches": ["<all_urls>"]
+  }]
 }
